@@ -1,0 +1,10 @@
+{
+    "name": "kimoi/exhentai-archival",
+    "authors": [
+        {
+            "name": "Oscar Berry",
+            "email": "oscar@madokami.com"
+        }
+    ],
+    "require": {}
+}
