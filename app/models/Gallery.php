@@ -33,7 +33,7 @@ class Gallery extends Model {
     }
 
     public function addTags($allTags) {
-        $tagNames = call_user_func_array('array_merge', $allTags);
+        $tagNames = array_unique(call_user_func_array('array_merge', $allTags));
         $preloaded = Tag::whereIn('name', $tagNames)->get();
 
         foreach($allTags as $ns => $tags) {
