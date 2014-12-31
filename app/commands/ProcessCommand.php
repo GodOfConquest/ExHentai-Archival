@@ -62,6 +62,7 @@ class ProcessCommand extends ConsoleKit\Command {
         $gallery->uploader = $page->getUploader();
 
         $tags = $page->getTags();
+        $gallery->tags()->detach();
         $gallery->addTags($tags);
 
         $parent = $page->getParent();
