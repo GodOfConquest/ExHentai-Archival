@@ -55,8 +55,8 @@ class CreateCommand extends ConsoleKit\Command {
         $schema->create('gallery_tag', function($table) {
             $table->integer('gallery_id')->unsigned();
             $table->integer('tag_id')->unsigned();
-            $table->primary(array('gallery_id', 'tag_id'));
             $table->enum('namespace', array('language', 'artist', 'male', 'female', 'reclass', 'misc', 'group', 'parody', 'character'));
+            $table->primary(array('gallery_id', 'tag_id', 'namespace'));
 
             $table->foreign('gallery_id')->references('id')->on('galleries')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade')->onUpdate('cascade');

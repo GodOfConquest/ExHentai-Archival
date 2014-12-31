@@ -25,7 +25,13 @@ class ProcessCommand extends ConsoleKit\Command {
             $currentCount += $galleries->count();
 
             foreach($galleries as $gallery) {
-                $this->processGallery($gallery);
+                try {
+                    $this->processGallery($gallery);
+                }
+                catch(Exception $e) {
+                    $this->writeln('Failed to archive gallery #'.$gallery->id);
+                    $this->writeln((string)$e);
+                }
             }
 
             if($currentCount >= $totalToProcess) {
@@ -113,6 +119,10 @@ class ProcessCommand extends ConsoleKit\Command {
 
             $downloadUrl = $archiver->getDownloadUrl();
             $downloadStream = fopen($downloadUrl, 'r');
+            if(!$downloadStream) {
+                throw new \Exception('Failed to open download URL: '.$downloadUrl);
+            }
+
             $tempStream = tmpfile();
             stream_copy_to_stream($downloadStream, $tempStream);
             fclose($downloadStream);

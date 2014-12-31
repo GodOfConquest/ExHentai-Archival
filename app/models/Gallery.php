@@ -32,28 +32,15 @@ class Gallery extends Model {
         return $a.'/'.$b;
     }
 
-    public function addTags($allTags) {
-        $tagNames = array_unique(call_user_func_array('array_merge', $allTags));
-        $preloaded = Tag::whereIn('name', $tagNames)->get();
+    public function addTagByName($tagName, $namespace) {
+        $tag = Tag::getCreateByName($tagName);
+        $this->tags()->attach($tag->id, array('namespace' => $namespace));
+    }
 
+    public function addTags($allTags) {
         foreach($allTags as $ns => $tags) {
             foreach($tags as $tagName) {
-                $tag = null;
-
-                foreach($preloaded as $preloadedTag) {
-                    if($preloadedTag->name === $tagName) {
-                        $tag = $preloadedTag;
-                        break;
-                    }
-                }
-
-                if(!$tag) {
-                    $tag = new Tag();
-                    $tag->name = $tagName;
-                    $tag->save();
-                }
-
-                $this->tags()->attach($tag->id, array('namespace' => $ns));
+                $this->addTagByName($tagName, $ns);
             }
         }
     }
