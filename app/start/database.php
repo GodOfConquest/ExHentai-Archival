@@ -4,7 +4,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 $capsule = new Capsule;
 
-$capsule->addConnection($config['database']);
+$capsule->addConnection(Config::get('database'));
 
 // Set the event dispatcher used by Eloquent models... (optional)
 use Illuminate\Events\Dispatcher;

@@ -11,8 +11,8 @@ class ImportCommand extends ConsoleKit\Command {
         $this->writeln("\t* galleries");
 
         $sql = 
-            "replace into exhentai_archival.galleries (id, token, title, title_jp, type, posted_at, created_at) (
-                select exhenid, hash, gallery.name, origtitle, type, added, now() from exhen.gallery
+            "replace into exhentai_archival.galleries (id, token, created_at) (
+                select exhenid, hash, now() from exhen.gallery
                 inner join exhen.galleryproperty on galleryproperty.gallery_id = gallery.id
                 where galleryproperty.value = 'English (T)'
             )";
