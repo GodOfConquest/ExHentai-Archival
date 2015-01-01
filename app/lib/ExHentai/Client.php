@@ -5,6 +5,7 @@ namespace ExHentai;
 class Client {
 
     const USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36';
+    const RATE_LIMIT_SECONDS = 5;
 
     protected $cookie;
 
@@ -26,6 +27,8 @@ class Client {
     }
 
     public function exec($url) {
+        $this->rateLimit();
+
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
@@ -41,6 +44,10 @@ class Client {
         }
 
         return $result;
+    }
+
+    protected function rateLimit() {
+        sleep(self::RATE_LIMIT_SECONDS);
     }
 
     protected function buildCookie($arr) {
