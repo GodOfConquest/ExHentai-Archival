@@ -22,9 +22,9 @@ class ProcessCommand extends ConsoleKit\Command {
                 break;
             }
 
-            $currentCount += $galleries->count();
+            foreach($galleries as $index => $gallery) {
+                printf("%d: #%d", ($currentCount + $index), $gallery->id);
 
-            foreach($galleries as $gallery) {
                 try {
                     $this->processGallery($gallery);
                 }
@@ -32,7 +32,11 @@ class ProcessCommand extends ConsoleKit\Command {
                     $this->writeln('Failed to archive gallery #'.$gallery->id);
                     $this->writeln((string)$e);
                 }
+
+                print("\n");
             }
+
+            $currentCount += $galleries->count();
 
             if($currentCount >= $totalToProcess) {
                 break;
@@ -41,6 +45,10 @@ class ProcessCommand extends ConsoleKit\Command {
     }
 
     public function processGallery(Gallery $gallery) {
+        if($gallery->id !== 713973) {
+            return;
+        }
+
         $page = $this->client->gallery($gallery->id, $gallery->token);
 
         // check if the gallery was purged
@@ -67,6 +75,8 @@ class ProcessCommand extends ConsoleKit\Command {
         $gallery->posted_at = $page->getPostedDate();
         $gallery->uploader = $page->getUploader();
 
+        print(" - ".$gallery->title);
+
         $tags = $page->getTags();
         $gallery->tags()->detach();
         $gallery->addTags($tags);
@@ -81,9 +91,9 @@ class ProcessCommand extends ConsoleKit\Command {
             $gallery->hidden_reason = $page->getHiddenReason();
         }
 
-        $latest = $page->getLatestVersion();
-        if($latest) {
-            $this->addGallery($latest['id'], $latest['token']);
+        $versions = $page->getNewerVersions();
+        foreach($versions as $version) {
+            $this->addGallery($version['id'], $version['token']);
         }
 
         $htmlDir = $gallery->getHtmlDirectory();
@@ -110,6 +120,8 @@ class ProcessCommand extends ConsoleKit\Command {
             if(!copy($legacyZip, $gallery->getZipPath())) {
                 throw new \Exception('Failed to copy zip to destination');
             }
+
+            print(" (using legacy)");
         }
         elseif(!$gallery->removed) {
             // load archiver page
@@ -137,6 +149,11 @@ class ProcessCommand extends ConsoleKit\Command {
             if(!copy($tempPath, $gallery->getZipPath())) {
                 throw new \Exception('Failed to copy zip to destination');
             }
+
+            print(" (downloaded)");
+        }
+        else {
+            print(" (removed)");
         }
 
         $gallery->processed = true;
@@ -150,6 +167,8 @@ class ProcessCommand extends ConsoleKit\Command {
             $gallery->id = $id;
             $gallery->token = $token;
             $gallery->save();
+
+            print(" +#".$id);
         }
     }
 

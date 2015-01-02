@@ -116,16 +116,18 @@ class Gallery extends Base {
         return $ret;
     }
 
-    public function getLatestVersion() {
-        $link = $this->filter('div#gnd a')->last();
+    public function getNewerVersions() {
+        $versions = array();
 
-        if(count($link) > 0) {
+        $links = $this->filter('div#gnd a');
+        foreach($links as $linkNode) {
+            $link = $this->wrap($linkNode);
+
             $url = $link->attr('href');
-            return URL::fromGallery($url);
+            $versions[] = URL::fromGallery($url);
         }
-        else {
-            return null;
-        }
+
+        return $versions;
     }
 
     public function getArchiverToken() {
