@@ -45,10 +45,6 @@ class ProcessCommand extends ConsoleKit\Command {
     }
 
     public function processGallery(Gallery $gallery) {
-        if($gallery->id !== 713973) {
-            return;
-        }
-
         $page = $this->client->gallery($gallery->id, $gallery->token);
 
         // check if the gallery was purged
