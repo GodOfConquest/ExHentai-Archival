@@ -28,6 +28,12 @@ class ProcessCommand extends ConsoleKit\Command {
                 try {
                     $this->processGallery($gallery);
                 }
+                catch(ExHentai\Exceptions\IpBannedException $e) {
+                    $this->writeln('Failed to archive gallery #'.$gallery->id);
+                    $this->writeln((string)$e);
+
+                    sleep(60 * 60); // 1 hr
+                }
                 catch(Exception $e) {
                     $this->writeln('Failed to archive gallery #'.$gallery->id);
                     $this->writeln((string)$e);

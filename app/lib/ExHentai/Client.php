@@ -8,10 +8,13 @@ class Client {
     const RATE_LIMIT_SECONDS = 10;
 
     protected $cookie;
+    protected $tor;
 
     public function __construct() {
-        $cookieArr = \Config::get('exhentai.cookie');
+        $cookieArr = \Config::get('client.cookie');
         $this->cookie = $this->buildCookie($cookieArr);
+
+        $this->tor = \Config::get('client.tor');
     }
 
     public function gallery($id, $token) {
@@ -36,8 +39,17 @@ class Client {
         curl_setopt($ch, CURLOPT_USERAGENT, self::USER_AGENT);
         curl_setopt($ch, CURLOPT_COOKIE, $this->cookie);
 
+        if($this->tor) {
+            curl_setopt($ch, CURLOPT_PROXY, $this->tor);
+            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+        }
+
         $result = curl_exec($ch);
         curl_close($ch);
+
+        if(strpos($result, 'Your IP address has been temporarily banned') === 0) {
+            throw new Exceptions\IpBannedException($result);
+        }
 
         if(!$result) {
             throw new \Exception('Failed to get page: '.$url);
