@@ -2,6 +2,6 @@
 
 namespace ExHentai\Exceptions;
 
-class IpBannedException extends Exception {
+class IpBannedException extends \Exception {
 
 }
