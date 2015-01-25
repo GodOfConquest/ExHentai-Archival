@@ -7,7 +7,7 @@ class URL {
     const BASE_URL = 'http://exhentai.org/';
 
     public static function toGallery($id, $token) {
-        $url = sprintf('%s/g/%d/%s/', self::BASE_URL, $id, $token);
+        $url = sprintf('%sg/%d/%s/', self::BASE_URL, $id, $token);
         return $url;
     }
 

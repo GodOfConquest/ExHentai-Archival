@@ -6,6 +6,7 @@ class Client {
 
     const USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36';
     const RATE_LIMIT_SECONDS = 10;
+    const COOKIE_FILE = 'storage/cookies';
 
     protected $cookie;
     protected $tor;
@@ -38,6 +39,8 @@ class Client {
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_USERAGENT, self::USER_AGENT);
         curl_setopt($ch, CURLOPT_COOKIE, $this->cookie);
+        curl_setopt($ch, CURLOPT_COOKIEFILE, self::COOKIE_FILE);
+        curl_setopt($ch, CURLOPT_COOKIEJAR, self::COOKIE_FILE);
 
         if($this->tor) {
             curl_setopt($ch, CURLOPT_PROXY, $this->tor);
