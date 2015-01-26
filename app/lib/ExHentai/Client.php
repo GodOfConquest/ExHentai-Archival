@@ -9,13 +9,11 @@ class Client {
     const COOKIE_FILE = 'storage/cookies';
 
     protected $cookie;
-    protected $tor;
+    protected $ctr;
 
     public function __construct() {
         $cookieArr = \Config::get('client.cookie');
         $this->cookie = $this->buildCookie($cookieArr);
-
-        $this->tor = \Config::get('client.tor');
     }
 
     public function gallery($id, $token) {
@@ -42,10 +40,10 @@ class Client {
         curl_setopt($ch, CURLOPT_COOKIEFILE, self::COOKIE_FILE);
         curl_setopt($ch, CURLOPT_COOKIEJAR, self::COOKIE_FILE);
 
-        if($this->tor) {
-            curl_setopt($ch, CURLOPT_PROXY, $this->tor);
-            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
-        }
+
+        $proxy = $this->pickProxy();
+        curl_setopt($ch, CURLOPT_PROXY, $proxy);
+        printf(" (%s)", $proxy);
 
         $result = curl_exec($ch);
         curl_close($ch);
@@ -63,6 +61,21 @@ class Client {
 
     protected function rateLimit() {
         sleep(self::RATE_LIMIT_SECONDS);
+    }
+
+    // TODO: throw out bad proxies automatically
+    protected function pickProxy() {
+        $proxies = \Config::get('client.proxies');
+        if(!$proxies || !is_array($proxies) || count($proxies) === 0) {
+            return null;
+        }
+
+        if(!in_array(null, $proxies)) { // null entry means don't use a proxy
+            $proxies[] = null;
+        }
+
+        // round robin
+        return $proxies[$this->ctr++ % count($proxies)];
     }
 
     protected function buildCookie($arr) {

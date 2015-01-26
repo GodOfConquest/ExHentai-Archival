@@ -28,8 +28,9 @@ return array(
             'lv' => '1416037443-1416037577'
         ),
 
-        //'tor' => '127.0.0.1:9050',
-        'tor' => false,
+        'proxies' => array(
+            /* ip:port */
+        ),
     ),
 
 
